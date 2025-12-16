@@ -4,6 +4,7 @@
 #include <thread>
 #include <chrono>
 #include <string>
+#include <vector>
 
 class Button
 {
@@ -44,6 +45,19 @@ public:
         window->draw(ref);
         window->draw(textRef);
     }
+
+    bool contains(sf::Vector2i mousePos) const
+    {
+        return ref.getGlobalBounds().contains(static_cast<sf::Vector2f>(mousePos));
+    }
+
+    void handleClick(sf::Vector2i mousePos)
+    {
+        if (contains(mousePos))
+        {
+            std::cout << "button clicked" << std::endl;
+        }
+    }
 };
 
 int main()
@@ -68,9 +82,13 @@ int main()
     sf::RenderWindow window(sf::VideoMode(WIDTH, HEIGHT), "Audio player");
     window.setFramerateLimit(60);
 
+    std::vector<Button> buttons;
+
     sf::Font font;
     font.loadFromFile("/mnt/c/Windows/Fonts/arial.ttf");
     Button button(100.f, 100.f, 100.f, 50.f, sf::Color::White, "Test", font);
+
+    buttons.emplace_back(button);
 
     while (window.isOpen())
     {
@@ -79,6 +97,15 @@ int main()
         {
             if (event.type == sf::Event::Closed)
                 window.close();
+
+            if (event.type == sf::Event::MouseButtonPressed && sf::Mouse::isButtonPressed(sf::Mouse::Button::Left))
+            {
+                sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+                for (auto &button : buttons)
+                {
+                    button.handleClick(mousePos);
+                }
+            }
         }
 
         window.clear(sf::Color::Black);
