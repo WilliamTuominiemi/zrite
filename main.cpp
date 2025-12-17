@@ -5,6 +5,7 @@
 #include <chrono>
 #include <string>
 #include <vector>
+#include <functional>
 
 class Button
 {
@@ -16,9 +17,11 @@ private:
     float width;
     float height;
     sf::Color color;
+    std::function<void()> onClick;
 
 public:
-    Button(float x, float y, float width, float height, sf::Color color, std::string text, sf::Font &font)
+    Button(float x, float y, float width, float height, sf::Color color, std::string text, sf::Font &font, std::function<void()> callback)
+        : onClick(callback)
     {
         ref.setSize(sf::Vector2f(width, height));
         ref.setPosition(x, y);
@@ -55,10 +58,20 @@ public:
     {
         if (contains(mousePos))
         {
-            std::cout << "button clicked" << std::endl;
+            onClick();
         }
     }
 };
+
+void playSound(sf::Sound *sound)
+{
+    sound->play();
+}
+
+void pauseSound(sf::Sound *sound)
+{
+    sound->pause();
+}
 
 int main()
 {
@@ -70,13 +83,6 @@ int main()
 
     sound.setBuffer(buffer);
 
-    // sound.play();
-
-    // while (sound.getStatus() == sf::Sound::Playing)
-    // {
-    //     std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    // }
-
     const int WIDTH = 350;
     const int HEIGHT = 150;
     sf::RenderWindow window(sf::VideoMode(WIDTH, HEIGHT), "Audio player");
@@ -87,8 +93,14 @@ int main()
     sf::Font font;
     font.loadFromFile("/mnt/c/Windows/Fonts/arial.ttf");
 
-    Button playButton(50.f, 50.f, 100.f, 50.f, sf::Color::White, "Play", font);
-    Button pauseButton(200.f, 50.f, 100.f, 50.f, sf::Color::White, "Pause", font);
+    Button playButton(50.f, 50.f, 100.f, 50.f, sf::Color::White, "Play", font,
+                      [&sound]()
+                      {
+                          sound.play();
+                      });
+    Button pauseButton(200.f, 50.f, 100.f, 50.f, sf::Color::White, "Pause", font,
+                       [&sound]()
+                       { sound.pause(); });
 
     buttons.emplace_back(playButton);
     buttons.emplace_back(pauseButton);
