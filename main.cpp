@@ -77,8 +77,8 @@ int main()
     //     std::this_thread::sleep_for(std::chrono::milliseconds(100));
     // }
 
-    const int WIDTH = 400;
-    const int HEIGHT = 400;
+    const int WIDTH = 350;
+    const int HEIGHT = 150;
     sf::RenderWindow window(sf::VideoMode(WIDTH, HEIGHT), "Audio player");
     window.setFramerateLimit(60);
 
@@ -86,9 +86,12 @@ int main()
 
     sf::Font font;
     font.loadFromFile("/mnt/c/Windows/Fonts/arial.ttf");
-    Button button(100.f, 100.f, 100.f, 50.f, sf::Color::White, "Test", font);
 
-    buttons.emplace_back(button);
+    Button playButton(50.f, 50.f, 100.f, 50.f, sf::Color::White, "Play", font);
+    Button pauseButton(200.f, 50.f, 100.f, 50.f, sf::Color::White, "Pause", font);
+
+    buttons.emplace_back(playButton);
+    buttons.emplace_back(pauseButton);
 
     while (window.isOpen())
     {
@@ -110,7 +113,10 @@ int main()
 
         window.clear(sf::Color::Black);
 
-        button.render(&window);
+        for (auto &button : buttons)
+        {
+            button.render(&window);
+        }
 
         window.display();
     }
